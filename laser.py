@@ -27,10 +27,20 @@ cntr = cv2.findContours(edge,cv2.RETR_TREE,cv2.CHAIN_APPROX_NONE)
 cntr = imutils.grab_contours(cntr)
 output = img.copy()
 
+prev_x, prev_y = None, None
+laser_number = 1
+cntr = cv2.findContours(edge,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+cntr = imutils.grab_contours(cntr)
+output = img.copy()
+
 for c in cntr:
     x,y = c[0][0]
     cv2.drawContours(output, [c], 0, (0,0,0),2)
     cv2.putText(output, f"laser {laser_number}", (x,y), cv2.FONT_HERSHEY_SIMPLEX, 0.7,(0,20,200),2)
+    if prev_x is not None and prev_y is not None:
+        distance = cv2.norm(np.array((x, y)), np.array((prev_x, prev_y)))
+        print(f"Distance between laser {laser_number - 1} and laser {laser_number} is {distance} pixels")
+    prev_x, prev_y = x, y
     laser_number += 1
     cv2.imshow("Laser Detection",output)
 
