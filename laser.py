@@ -7,11 +7,11 @@ import imutils
 img = cv2.imread('laser.jpeg')
 cv2.imshow("Origial Image",img)
 
-#red slising
-imgm = np.array(img)
-imgm[:,:,0] = 0
-imgm[:,:,1] = 0
-ret, thresh = cv2.threshold(imgm,165,255,cv2.THRESH_BINARY)
+#red slicing
+imgr = np.array(img)
+imgr[:,:,0] = 0
+imgr[:,:,1] = 0
+ret, thresh = cv2.threshold(imgr,165,255,cv2.THRESH_BINARY)
 cv2.imshow("RED Channel",thresh)
 
 #edge detection
