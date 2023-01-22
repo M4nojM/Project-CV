@@ -1,39 +1,37 @@
 import cv2
-import imutils
+from tkinter import *
+import numpy as np
 
-# Read the image
-img = cv2.imread('board.png')
+def on_trackbar(val):
+    global rows, cols
+    rows = int(val)
+    cols = int(val)
 
-# Define the grid size (number of rows and columns)
-grid_size = (20,20)
+def show_frame():
+    _, frame = cap.read()
+    for i in range(rows):
+        cv2.line(frame, (0, int(i * height/rows)), (int(width), int(i * height/rows)), (255, 255, 255), 2)
+    for j in range(cols):
+        cv2.line(frame, (int(j * width/cols), 0), (int(j * width/cols), int(height)), (255, 255, 255), 2)
 
-# Define the grid line color and thickness
-line_color = (0,0,0) # black
-line_thickness = 1
+    ret, png = cv2.imencode('.png', frame)
+    img = PhotoImage(data=png.tobytes())
+    lmain.imgtk = img
+    lmain.configure(image=img)
+    lmain.after(10, show_frame)
 
-# Get the image height and width
-temp = img.shape
-height,width = temp[0],temp[1]
+cap = cv2.VideoCapture(0)
+width, height = int(cap.get(3)), int(cap.get(4))
 
-# Calculate the cell width and height
-cell_width = width // grid_size[0]
-cell_height = height // grid_size[1]
+root = Tk()
+root.title("Grid on Live Video")
 
-# Iterate through the rows and columns and draw lines to form the grid
-for i in range(1, grid_size[0]):
-    x = i * cell_width
-    y = 0
-    x_end = i * cell_width
-    y_end = height
-    cv2.line(img, (x, y), (x_end, y_end), line_color, line_thickness)
+lmain = Label(root)
+lmain.pack()
 
-for j in range(1, grid_size[1]):
-    x = 0
-    y = j * cell_height
-    x_end = width
-    y_end = j * cell_height
-    cv2.line(img, (x, y), (x_end, y_end), line_color, line_thickness)
+rows, cols = 5, 5
+slider = Scale(root, from_=5, to=20, orient=HORIZONTAL, command=on_trackbar)
+slider.pack()
 
-# Show the image with the grid overlay
-cv2.imshow("Image with grid", img)
-cv2.waitKey()
+show_frame()
+root.mainloop()
